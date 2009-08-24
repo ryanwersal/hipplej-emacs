@@ -1,0 +1,1 @@
+cvs -d:pserver:anonymous@cvs.gna.org:/cvs/color-theme co color-theme
