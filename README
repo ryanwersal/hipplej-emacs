@@ -1,3 +1,8 @@
-This is my emacs configuration
+This is my emacs configuration.
+
+Remember to run
+  git submodule init
+  git submodule update
+after cloning this repository.
 
 Justin Hipple <brokenreality@gmail.com>
