@@ -43,8 +43,12 @@
  '(visible-bell t))
 
 ;; Set the default font
-(setq initial-frame-alist '((font . "-apple-Inconsolata-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1")))
-(setq default-frame-alist '((font . "-apple-Inconsolata-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1")))
+(defvar my-font
+  (if at-the-office-p
+      "-bitstream-Bitstream_Vera_Sans_Mono-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"
+    "-apple-Bitstream_Vera_Sans_Mono-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"))
+(setq initial-frame-alist `((font . ,my-font)))
+(setq default-frame-alist `((font . ,my-font)))
 
 ;; Ensure the Command key is Meta on OSX
 (if (not at-the-office-p)
@@ -67,18 +71,20 @@
 (setq frame-title-format "emacs - %b")
 
 ;; Set a reasonable email
-(setq user-mail-address (when at-the-office-p
-                          "hipplej@zuerchertech.com"
-                          "brokenreality@gmail.com"))
+(setq user-mail-address
+      (if at-the-office-p "hipplej@zuerchertech.com" "brokenreality@gmail.com"))
 
 ;; Don't show the damn splash screen
 (setq inhibit-splash-screen t)
 
+;; Typing replaces the selected region
+(delete-selection-mode t)
+
 ;; Don't make me type out 'yes' and 'no'
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Line numbers
-(global-linum-mode 1)
+;; Enable Line numbers
+(global-linum-mode t)
 
 ;; Snippets for fancy completion
 (require 'yasnippet)

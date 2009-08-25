@@ -58,11 +58,11 @@ Based on the Tango color palette."
      (mode-line-buffer-id ((t (:background "#1f1f1f" :foreground "#eeeeec"))))
      (mode-line-inactive ((t (:background "#1f1f1f" :foreground "#888a85"))))
      (minibuffer-prompt ((t (:foreground "#729fcf")))) ; light sky blue
-     (region ((t (:foreground "cyan" :background "dark cyan"))))
+     (region ((t (:foreground "#000" :background "#729fcf"))))
 
      ;; Parenthesis matching
-     (show-paren-match-face ((t (:foreground "#2e3436" :background "#73d216"))))
-     (show-paren-mismatch-face ((t (:foreground "#2e3436" :background "#ef2929"))))
+     (show-paren-match-face ((t (:foreground "#72d216" :background "#000"))))
+     (show-paren-mismatch-face ((t (:foreground "#ef2929" :background "#000"))))
 
      ;; Calendar
      (holiday-face ((t (:foreground "#cc0000")))) ; dark scarlet red
