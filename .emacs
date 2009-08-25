@@ -45,7 +45,7 @@
 ;; Set the default font
 (defvar my-font
   (if at-the-office-p
-      "-bitstream-Bitstream_Vera_Sans_Mono-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"
+      "-bitstream-Bitstream_Vera_Sans_Mono-medium-normal-normal-*-8-*-*-*-m-0-iso10646-1"
     "-apple-Bitstream_Vera_Sans_Mono-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"))
 (setq initial-frame-alist `((font . ,my-font)))
 (setq default-frame-alist `((font . ,my-font)))
