@@ -61,8 +61,8 @@ Based on the Tango color palette."
      (region ((t (:foreground "#000" :background "#729fcf"))))
 
      ;; Parenthesis matching
-     (show-paren-match-face ((t (:foreground "#72d216" :background "#000"))))
-     (show-paren-mismatch-face ((t (:foreground "#ef2929" :background "#000"))))
+     (show-paren-match-face ((t (:foreground "#000" :background "#729fcf"))))
+     (show-paren-mismatch-face ((t (:foreground "#white" :background "#cc0000"))))
 
      ;; Calendar
      (holiday-face ((t (:foreground "#cc0000")))) ; dark scarlet red
