@@ -3,7 +3,7 @@
 	url = git://github.com/jochu/swank-clojure.git
 [submodule "slime"]
 	path = slime
-	url = git://git.boinkor.net/slime.git
+	url = git://github.com/technomancy/slime.git
 [submodule "clojure-mode"]
 	path = clojure-mode
 	url = git://github.com/jochu/clojure-mode.git
