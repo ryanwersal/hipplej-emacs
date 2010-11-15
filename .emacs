@@ -67,10 +67,10 @@
 ;; If at the office then maximize the window.
 (if at-the-office-p
     (add-hook 'window-setup-hook
-	      (lambda()
-		(interactive)
-		(when (eq system-type 'windows-nt)
-		  (w32-send-sys-command 61488)))))
+			  (lambda()
+				(interactive)
+				(when (eq system-type 'windows-nt)
+				  (w32-send-sys-command 61488)))))
 
 ;; Start with 50/50 vertical split.
 (add-hook 'window-setup-hook 'split-window-horizontally)
@@ -87,17 +87,19 @@
 ;; Always show the buffer name in the title bar
 (setq-default
  frame-title-format
- (list '((buffer-file-name "Emacs - %f" (dired-directory 
-										 dired-directory
-										 (revert-buffer-function " %b"
-																 ("%b - Dir:  " default-directory)))))))
+ (list '((buffer-file-name
+		  "Emacs - %f"
+		  (dired-directory 
+		   dired-directory
+		   (revert-buffer-function " %b" ("%b - Dir:  " default-directory)))))))
 
 (setq-default
  icon-title-format
- (list '((buffer-file-name "Emacs - %f" (dired-directory
-										 dired-directory
-										 (revert-buffer-function " %b"
-																 ("%b - Dir:  " default-directory)))))))
+ (list '((buffer-file-name
+		  "Emacs - %f"
+		  (dired-directory
+		   dired-directory
+		   (revert-buffer-function " %b"("%b - Dir:  " default-directory)))))))
 
 ;; Set a reasonable email
 (setq user-mail-address
