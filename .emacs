@@ -6,18 +6,24 @@
 (defvar at-the-office-p (string-match "windows" (symbol-name system-type)))
 
 (defvar libdir
-  (expand-file-name "~/src/hipplej-emacs"))
+  (if at-the-office-p
+	  (expand-file-name "~/.emacs.d")
+	(expand-file-name "~/src/hipplej-emacs")))
  
 (defun libdir-file (file)
   (concat libdir "/" file))
 
 (defvar lib-dirs
-  '("slime"
-    "color-theme/color-theme"
-    "js2-mode"
+  '("auto-complete"
     "clojure-mode"
+    "color-theme/color-theme"
+	"csharp-mode"
+    "js2-mode"
+	"slime"
     "swank-clojure"
-    "yasnippet"))
+	"switch-window"
+    "yasnippet"
+	))
 
 ;; Add all the libs to the load path
 (mapcar #'(lambda (path)
@@ -58,6 +64,17 @@
       (setq mac-command-modifier 'meta)
       (setq mac-option-modifier nil)))
 
+;; If at the office then maximize the window.
+(if at-the-office-p
+    (add-hook 'window-setup-hook
+	      (lambda()
+		(interactive)
+		(when (eq system-type 'windows-nt)
+		  (w32-send-sys-command 61488)))))
+
+;; Start with 50/50 vertical split.
+(add-hook 'window-setup-hook 'split-window-horizontally)
+
 ;; Syntax Highlighting
 (require 'color-theme)
 (color-theme-initialize)
@@ -68,11 +85,23 @@
 (setq-default indent-tabs-mode at-the-office-p)
 
 ;; Always show the buffer name in the title bar
-(setq frame-title-format "emacs - %b")
+(setq-default
+ frame-title-format
+ (list '((buffer-file-name "Emacs - %f" (dired-directory 
+										 dired-directory
+										 (revert-buffer-function " %b"
+																 ("%b - Dir:  " default-directory)))))))
+
+(setq-default
+ icon-title-format
+ (list '((buffer-file-name "Emacs - %f" (dired-directory
+										 dired-directory
+										 (revert-buffer-function " %b"
+																 ("%b - Dir:  " default-directory)))))))
 
 ;; Set a reasonable email
 (setq user-mail-address
-      (if at-the-office-p "hipplej@zuerchertech.com" "hipplej@flipchain.com"))
+      (if at-the-office-p "hipplej@zuerchertech.com" "brokenreality@gmail.com"))
 
 ;; Don't show the damn splash screen
 (setq inhibit-splash-screen t)
@@ -91,6 +120,9 @@
 (yas/initialize)
 (yas/load-directory (libdir-file "yasnippet/snippets"))
 
+;; Fancy window switching
+(require 'switch-window)
+
 ;; Use IDO to handle buffer switching and such
 (require 'ido)
 (ido-mode t)
@@ -102,7 +134,7 @@
 	  ido-confirm-unique-completion t ; wait for RET, even with unique completion
 	  ido-auto-merge-werk-directories-length -1) ; new file if no match
 
-;; C Mode specific stuff
+;; C mode specific stuff
 (add-hook 'c-mode-common-hook
 		  (lambda() 
 			(local-set-key  (kbd "C-c o") 'ff-find-other-file)))
@@ -116,24 +148,41 @@
                   py-smart-indentation (not at-the-office-p)
                   python-indent 4)))
 
-;; Steve Yegge's fantastic Javascript mode
-(autoload 'js2-mode "js2" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+;; C# mode specific stuff
+(require 'csharp-mode)
+(setq auto-mode-alist (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
-;; Clojure Mode
-(require 'clojure-mode)
-(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+;; Pressing 'Enter' should also indent
+(define-key global-map (kbd "RET") 'newline-and-indent)
 
-;; Initialize Slime
-(require 'slime)
-(slime-setup)
+;; Fancy autocompletion
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/ac-dict")
+(ac-config-default)
+(setq ac-use-menu-map t)
+(define-key ac-menu-map "\C-n" 'ac-next)
+(define-key ac-menu-map "\C-p" 'ac-previous)
 
-;: Initialize Clojure Swank
-;; This will obviosly fail miserably at work but unfortunately we don't
-;; use Clojure at work so for now I don't really have to care too much
-(setq swank-clojure-binary "/usr/local/bin/clj")
-(require 'swank-clojure-autoload)
-(swank-clojure-config
- (setq swank-clojure-jar-path "~/src/clojure/clojure.jar")
- (setq swank-clojure-extra-classpaths
-       (list "~/src/clojure-contrib/clojure-contrib.jar")))
+;; Experimental Crap
+;; (global-ede-mode 1)
+;; (require 'semantic/sb)
+;; (semantic-mode 1)
+
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-map '("Q_GUI_EXPORT" . ""))
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-map '("Q_CORE_EXPORT" . ""))
+
+;; (semantic-add-system-include "C:/Qt/3.3.5-debug/include" 'c++-mode)
+
+;; (add-to-list 'auto-mode-alist '("C:/Qt/3.3.5-debug/include" . c++-mode))
+
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qconfig.h")
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qconfig-large.h")
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qglobal.h")
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qmodules.h")
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qgplugin.h")
+
+;; (semantic-add-system-include "C:/src/leds/branches/unstable/ztoolkit/include/" 'c++-mode)
+
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/src/leds/branches/unstable/ztoolkit/include/zconfig.h")
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/src/leds/branches/unstable/ztoolkit/include/zglobal.h")
+;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/src/leds/branches/unstable/ztoolkit/include/zexport.h")
