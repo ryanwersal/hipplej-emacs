@@ -154,9 +154,6 @@
 (require 'csharp-mode)
 (setq auto-mode-alist (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
-;; Pressing 'Enter' should also indent
-(define-key global-map (kbd "RET") 'newline-and-indent)
-
 ;; Fancy autocompletion
 (require 'auto-complete-config)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/ac-dict")
