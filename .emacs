@@ -114,6 +114,11 @@
 ;; Don't make me type out 'yes' and 'no'
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; Don't prompt me when killing buffers with active processes.
+(setq kill-buffer-query-functions
+	  (remq 'process-kill-buffer-query-function
+			kill-buffer-query-functions))
+
 ;; Enable Line numbers
 (global-linum-mode t)
 
