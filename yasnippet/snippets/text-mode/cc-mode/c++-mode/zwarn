@@ -1,0 +1,3 @@
+#name : zwarn zwarn << __FUNCTION__ << " -- error" << endl;
+# --
+zwarn << __FUNCTION__ << "() -- " << ZVAR($1) << endl;
