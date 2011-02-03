@@ -119,6 +119,9 @@
 	  (remq 'process-kill-buffer-query-function
 			kill-buffer-query-functions))
 
+;; Default to 'string' mode when using re-builder
+(setq reb-re-syntax 'string)
+
 ;; Enable Line numbers
 (global-linum-mode t)
 
@@ -166,6 +169,13 @@
 (setq ac-use-menu-map t)
 (define-key ac-menu-map "\C-n" 'ac-next)
 (define-key ac-menu-map "\C-p" 'ac-previous)
+
+; Prevent accidentally killing emacs.
+(defun confirm-exit-from-emacs()
+  (interactive)
+  (if (yes-or-no-p "Do you want to exit? ")
+      (save-buffers-kill-emacs)))
+(global-set-key "\C-x\C-c" 'confirm-exit-from-emacs)
 
 ;; Experimental Crap
 ;; (global-ede-mode 1)
