@@ -7,3 +7,6 @@
 [submodule "clojure-mode"]
 	path = clojure-mode
 	url = git://github.com/jochu/clojure-mode.git
+[submodule "emacs-jabber"]
+	path = emacs-jabber
+	url = git://emacs-jabber.git.sourceforge.net/gitroot/emacs-jabber/emacs-jabber
