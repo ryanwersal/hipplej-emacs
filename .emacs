@@ -19,8 +19,6 @@
     "color-theme/color-theme"
 	"csharp-mode"
     "js2-mode"
-	"slime"
-    "swank-clojure"
 	"switch-window"
     "yasnippet"
 	))
@@ -29,6 +27,9 @@
 (mapcar #'(lambda (path)
             (add-to-list 'load-path (libdir-file path)))
         lib-dirs)
+
+;;(autoload 'clojure-mode "clojure-mode" "A major mode for Clojure" t)
+;;(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
  
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
@@ -158,9 +159,13 @@
                   py-smart-indentation (not at-the-office-p)
                   python-indent 4)))
 
+;; Clojure mode specific stuff
+(require 'clojure-mode)
+(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+
 ;; C# mode specific stuff
 (require 'csharp-mode)
-(setq auto-mode-alist (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 
 ;; Fancy autocompletion
 (require 'auto-complete-config)
