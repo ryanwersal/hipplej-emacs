@@ -141,8 +141,8 @@
 
 ;; C mode specific stuff
 (add-hook 'c-mode-common-hook
-		  (lambda() 
-			(local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+          (lambda()
+            (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
 ;; Python mode specific stuff
 (add-hook 'python-mode-hook
