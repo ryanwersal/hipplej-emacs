@@ -2,35 +2,6 @@
 
 (require 'cl)
 
-;; Windows isn't welcome in my home so this is an easy way to tell if I'm working at the office
-(defvar at-the-office-p (string-match "windows" (symbol-name system-type)))
-
-(defvar libdir
-  (if at-the-office-p
-	  (expand-file-name "~/.emacs.d")
-	(expand-file-name "~/src/hipplej-emacs")))
- 
-(defun libdir-file (file)
-  (concat libdir "/" file))
-
-(defvar lib-dirs
-  '("auto-complete"
-    "clojure-mode"
-    "color-theme/color-theme"
-	"csharp-mode"
-    "js2-mode"
-	"switch-window"
-    "yasnippet"
-	))
-
-;; Add all the libs to the load path
-(mapcar #'(lambda (path)
-            (add-to-list 'load-path (libdir-file path)))
-        lib-dirs)
-
-;;(autoload 'clojure-mode "clojure-mode" "A major mode for Clojure" t)
-;;(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
- 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -48,6 +19,30 @@
  '(sound-load-list nil)
  '(tool-bar-mode nil)
  '(visible-bell t))
+
+;; Windows isn't welcome in my home so this is an easy way to tell if I'm working at the office.
+(defvar at-the-office-p (string-match "windows" (symbol-name system-type)))
+
+;; These aren't quite as useful as they were pre-ELPA but I'll keep them around for now.
+(defvar libdir (expand-file-name "~/.emacs.d"))
+
+(defun libdir-file (file) (concat libdir "/" file))
+ 
+(defvar lib-dirs '("elpa" "yasnippet" "themes"))
+
+;; Add all the libs to the load path.
+;; Ideally, ELPA would be the only package we would load manually
+;; and all other packages would be managed through ELPA.
+;; Unfortunately a handful of packages aren't in repositories so
+;; we still have to load them manually for now.
+(mapcar #'(lambda (path)
+            (add-to-list 'load-path (libdir-file path)))
+        lib-dirs)
+
+;; ELPA package archive system.
+(require 'package)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
 
 ;; Set the default font
 (defvar my-font
@@ -77,8 +72,7 @@
 (add-hook 'window-setup-hook 'split-window-horizontally)
 
 ;; Syntax Highlighting
-(require 'color-theme)
-(color-theme-initialize)
+(require 'color-theme-subdued)
 (color-theme-subdued)
 
 ;; Indentation madness
@@ -160,16 +154,13 @@
                   python-indent 4)))
 
 ;; Clojure mode specific stuff
-(require 'clojure-mode)
-(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
-
-;; C# mode specific stuff
-(require 'csharp-mode)
-(add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
+(add-hook 'clojure-mode-hook
+          (lambda()
+            (paredit-mode 1)))
 
 ;; Fancy autocompletion
 (require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/ac-dict")
+(add-to-list 'ac-dictionary-directories (libdir-file "auto-complete/ac-dict"))
 (ac-config-default)
 (setq ac-use-menu-map t)
 (define-key ac-menu-map "\C-n" 'ac-next)
@@ -181,27 +172,3 @@
   (if (yes-or-no-p "Do you want to exit? ")
       (save-buffers-kill-emacs)))
 (global-set-key "\C-x\C-c" 'confirm-exit-from-emacs)
-
-;; Experimental Crap
-;; (global-ede-mode 1)
-;; (require 'semantic/sb)
-;; (semantic-mode 1)
-
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-map '("Q_GUI_EXPORT" . ""))
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-map '("Q_CORE_EXPORT" . ""))
-
-;; (semantic-add-system-include "C:/Qt/3.3.5-debug/include" 'c++-mode)
-
-;; (add-to-list 'auto-mode-alist '("C:/Qt/3.3.5-debug/include" . c++-mode))
-
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qconfig.h")
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qconfig-large.h")
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qglobal.h")
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qmodules.h")
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/Qt/3.3.5-debug/include/qgplugin.h")
-
-;; (semantic-add-system-include "C:/src/leds/branches/unstable/ztoolkit/include/" 'c++-mode)
-
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/src/leds/branches/unstable/ztoolkit/include/zconfig.h")
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/src/leds/branches/unstable/ztoolkit/include/zglobal.h")
-;; (add-to-list 'semantic-lex-c-preprocessor-symbol-file "C:/src/leds/branches/unstable/ztoolkit/include/zexport.h")
