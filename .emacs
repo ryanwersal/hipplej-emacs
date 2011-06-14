@@ -27,7 +27,7 @@
 (defvar libdir (expand-file-name "~/.emacs.d"))
 
 (defun libdir-file (file) (concat libdir "/" file))
- 
+
 (defvar lib-dirs '("elpa" "yasnippet" "themes"))
 
 ;; Add all the libs to the load path.
@@ -63,10 +63,10 @@
 ;; If at the office then maximize the window.
 (if at-the-office-p
     (add-hook 'window-setup-hook
-			  (lambda()
-				(interactive)
-				(when (eq system-type 'windows-nt)
-				  (w32-send-sys-command 61488)))))
+              (lambda()
+                (interactive)
+                (when (eq system-type 'windows-nt)
+                  (w32-send-sys-command 61488)))))
 
 ;; Start with 50/50 vertical split.
 (add-hook 'window-setup-hook 'split-window-horizontally)
@@ -83,18 +83,18 @@
 (setq-default
  frame-title-format
  (list '((buffer-file-name
-		  "Emacs - %f"
-		  (dired-directory 
-		   dired-directory
-		   (revert-buffer-function " %b" ("%b - Dir:  " default-directory)))))))
+          "Emacs - %f"
+          (dired-directory
+           dired-directory
+           (revert-buffer-function " %b" ("%b - Dir:  " default-directory)))))))
 
 (setq-default
  icon-title-format
  (list '((buffer-file-name
-		  "Emacs - %f"
-		  (dired-directory
-		   dired-directory
-		   (revert-buffer-function " %b"("%b - Dir:  " default-directory)))))))
+          "Emacs - %f"
+          (dired-directory
+           dired-directory
+           (revert-buffer-function " %b"("%b - Dir:  " default-directory)))))))
 
 ;; Set a reasonable email
 (setq user-mail-address
@@ -111,8 +111,8 @@
 
 ;; Don't prompt me when killing buffers with active processes.
 (setq kill-buffer-query-functions
-	  (remq 'process-kill-buffer-query-function
-			kill-buffer-query-functions))
+      (remq 'process-kill-buffer-query-function
+            kill-buffer-query-functions))
 
 ;; Default to 'string' mode when using re-builder
 (setq reb-re-syntax 'string)
@@ -132,7 +132,7 @@
 (require 'ido)
 (ido-mode t)
 (setq ido-ignore-buffers '("\\` " "^\*Mess" "^\*Back" "^\*scratch" ".*Completion" "^\*Ido") ; ignore these
-	  ido-everywhere t            ; use for many file dialogs
+      ido-everywhere t            ; use for many file dialogs
 	  ido-case-fold  t            ; be case-insensitive
 	  ido-enable-flex-matching t  ; be flexible
 	  ido-max-prospects 5         ; don't spam my minibuffer
