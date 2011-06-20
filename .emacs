@@ -21,7 +21,7 @@
  '(visible-bell t))
 
 ;; Windows isn't welcome in my home so this is an easy way to tell if I'm working at the office.
-(defvar at-the-office-p (string-match "windows" (symbol-name system-type)))
+(defvar at-the-office-p (eq system-type 'windows-nt))
 
 ;; These aren't quite as useful as they were pre-ELPA but I'll keep them around for now.
 (defvar libdir (expand-file-name "~/.emacs.d"))
@@ -35,9 +35,7 @@
 ;; and all other packages would be managed through ELPA.
 ;; Unfortunately a handful of packages aren't in repositories so
 ;; we still have to load them manually for now.
-(mapcar #'(lambda (path)
-            (add-to-list 'load-path (libdir-file path)))
-        lib-dirs)
+(mapcar #'(lambda (path) (add-to-list 'load-path (libdir-file path))) lib-dirs)
 
 ;; ELPA package archive system.
 (require 'package)
@@ -65,8 +63,7 @@
     (add-hook 'window-setup-hook
               (lambda()
                 (interactive)
-                (when (eq system-type 'windows-nt)
-                  (w32-send-sys-command 61488)))))
+				(w32-send-sys-command 61488))))
 
 ;; Start with 50/50 vertical split.
 (add-hook 'window-setup-hook 'split-window-horizontally)
