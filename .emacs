@@ -29,7 +29,7 @@
 (defun libdir-file (file) (concat libdir "/" file))
 
 ;; There are only a couple of packages that have to be managed manually now.
-(defvar lib-dirs '("elpa" "yasnippet" "themes"))
+(defvar lib-dirs '("elpa" "yasnippet-0.6.1c" "themes"))
 
 ;; Add all the libs to the load path.
 ;; Ideally, ELPA would be the only package we would load manually
@@ -123,7 +123,7 @@
 ;; Enable yasnippet for fancy templates.
 (require 'yasnippet)
 (yas/initialize)
-(yas/load-directory (libdir-file "yasnippet/snippets"))
+(yas/load-directory (libdir-file "yasnippet-0.6.1c/snippets"))
 
 ;; Enable fancy window switching.
 (require 'switch-window)
