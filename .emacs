@@ -28,6 +28,7 @@
 
 (defun libdir-file (file) (concat libdir "/" file))
 
+;; There are only a couple of packages that have to be managed manually now.
 (defvar lib-dirs '("elpa" "yasnippet" "themes"))
 
 ;; Add all the libs to the load path.
@@ -42,7 +43,7 @@
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
-;; Set the default font
+;; Set the default font to something nice.
 (defvar my-font
   (if at-the-office-p
       "-outline-Bitstream Vera Sans Mono-normal-normal-normal-mono-11-*-*-*-c-*-iso8859-1"
@@ -50,7 +51,7 @@
 (setq initial-frame-alist `((font . ,my-font)))
 (setq default-frame-alist `((font . ,my-font)))
 
-;; Ensure the Command key is Meta on OSX
+;; Ensure the Command key is Meta on OSX.
 (if (not at-the-office-p)
     (progn
       (setq mac-option-key-is-meta nil)
@@ -58,25 +59,20 @@
       (setq mac-command-modifier 'meta)
       (setq mac-option-modifier nil)))
 
-;; If at the office then maximize the window.
-(if at-the-office-p
-    (add-hook 'window-setup-hook
-              (lambda()
-                (interactive)
-				(w32-send-sys-command 61488))))
-
-;; Start with 50/50 vertical split.
+;; Maxmize the window and start with 50/50 vertical split.
+(require 'maxframe)
+(add-hook 'window-setup-hook 'maximize-frame t)
 (add-hook 'window-setup-hook 'split-window-horizontally)
 
-;; Syntax Highlighting
+;; Enable syntax highlighting.
 (require 'color-theme-subdued)
 (color-theme-subdued)
 
-;; Indentation madness
+;; Tabs cause nothing but headaches but I'm forced to use them at work.
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode at-the-office-p)
 
-;; Always show the buffer name in the title bar
+;; Always show the buffer name in the title bar.
 (setq-default
  frame-title-format
  (list '((buffer-file-name
@@ -93,17 +89,17 @@
            dired-directory
            (revert-buffer-function " %b"("%b - Dir:  " default-directory)))))))
 
-;; Set a reasonable email
+;; Set an appropriate email address depending on whether I'm at work or home.
 (setq user-mail-address
       (if at-the-office-p "hipplej@zuerchertech.com" "brokenreality@gmail.com"))
 
-;; Don't show the damn splash screen
+;; Don't show the damn splash screen.
 (setq inhibit-splash-screen t)
 
-;; Typing replaces the selected region
+;; Typing replaces the selected region.
 (delete-selection-mode t)
 
-;; Don't make me type out 'yes' and 'no'
+;; Don't make me type out 'yes' and 'no'.
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Don't prompt me when killing buffers with active processes.
@@ -111,21 +107,28 @@
       (remq 'process-kill-buffer-query-function
             kill-buffer-query-functions))
 
-;; Default to 'string' mode when using re-builder
+; Prevent accidentally killing emacs.
+(defun confirm-exit-from-emacs()
+  (interactive)
+  (if (yes-or-no-p "Do you want to exit? ")
+      (save-buffers-kill-emacs)))
+(global-set-key "\C-x\C-c" 'confirm-exit-from-emacs)
+
+;; Default to 'string' mode when using re-builder.
 (setq reb-re-syntax 'string)
 
-;; Enable Line numbers
+;; Always show line numbers.
 (global-linum-mode t)
 
-;; Snippets for fancy completion
+;; Enable yasnippet for fancy templates.
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory (libdir-file "yasnippet/snippets"))
 
-;; Fancy window switching
+;; Enable fancy window switching.
 (require 'switch-window)
 
-;; Use IDO to handle buffer switching and such
+;; Enable IDO to handle buffer switching and such.
 (require 'ido)
 (ido-mode t)
 (setq ido-ignore-buffers '("\\` " "^\*Mess" "^\*Back" "^\*scratch" ".*Completion" "^\*Ido") ; ignore these
@@ -136,12 +139,20 @@
 	  ido-confirm-unique-completion t ; wait for RET, even with unique completion
 	  ido-auto-merge-werk-directories-length -1) ; new file if no match
 
-;; C mode specific stuff
+;; Enable fancy autocompletion in code.
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories (libdir-file "auto-complete/ac-dict"))
+(ac-config-default)
+(setq ac-use-menu-map t)
+(define-key ac-menu-map "\C-n" 'ac-next)
+(define-key ac-menu-map "\C-p" 'ac-previous)
+
+;; C mode specific stuff.
 (add-hook 'c-mode-common-hook
           (lambda()
             (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
-;; Python mode specific stuff
+;; Python mode specific stuff.
 (add-hook 'python-mode-hook
           (lambda()
             (setq tab-width 4
@@ -150,22 +161,7 @@
                   py-smart-indentation (not at-the-office-p)
                   python-indent 4)))
 
-;; Clojure mode specific stuff
+;; Clojure mode specific stuff.
 (add-hook 'clojure-mode-hook
           (lambda()
             (paredit-mode 1)))
-
-;; Fancy autocompletion
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories (libdir-file "auto-complete/ac-dict"))
-(ac-config-default)
-(setq ac-use-menu-map t)
-(define-key ac-menu-map "\C-n" 'ac-next)
-(define-key ac-menu-map "\C-p" 'ac-previous)
-
-; Prevent accidentally killing emacs.
-(defun confirm-exit-from-emacs()
-  (interactive)
-  (if (yes-or-no-p "Do you want to exit? ")
-      (save-buffers-kill-emacs)))
-(global-set-key "\C-x\C-c" 'confirm-exit-from-emacs)
