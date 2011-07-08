@@ -147,6 +147,10 @@
 (define-key ac-menu-map "\C-n" 'ac-next)
 (define-key ac-menu-map "\C-p" 'ac-previous)
 
+;; I write C++ so default to the correct mode based on the filetypes I commonly use.
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
+
 ;; C mode specific stuff.
 (add-hook 'c-mode-common-hook
           (lambda()
