@@ -154,7 +154,9 @@
 ;; C mode specific stuff.
 (add-hook 'c-mode-common-hook
           (lambda()
-            (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+            (progn
+              (local-set-key  (kbd "C-c o") 'ff-find-other-file)
+              (font-lock-add-keywords nil '(("\\<\\(FIXME\\|TODO\\|BUG\\|NOTE\\):" 1 font-lock-warning-face t))))))
 
 ;; Python mode specific stuff.
 (add-hook 'python-mode-hook
