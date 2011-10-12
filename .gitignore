@@ -1,7 +1,0 @@
-.DS_Store
-/server
-/auto-save-list
-*.elc
-.emacs~
-/elpa/archives
-ac-comphist.dat

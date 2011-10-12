@@ -1,3 +1,0 @@
-#name : conn CONNECT(obj, SIGNAL(...), obj, SLOT(...));
-# --
-connect($1, SIGNAL($2), $3, SLOT($4));
