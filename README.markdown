@@ -1,0 +1,1 @@
+This project represents my changes to [Justin Hipple's Emacs Configuration](https://github.com/hipplej/hipplej-emacs). I have added my changes to Github in the hopes that they will be useful to someone else.
