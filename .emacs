@@ -11,6 +11,8 @@
  '(c-basic-offset 4)
  '(c-default-style (quote ((c-mode . "bsd") (c++-mode . "bsd") (java-mode . "java") (other . "bsd"))))
  '(column-number-mode t)
+ '(ecb-options-version "2.40")
+ '(ecb-source-path nil)
  '(get-frame-for-buffer-default-instance-limit nil)
  '(gutter-buffers-tab-visible-p nil)
  '(make-backup-files nil)
@@ -18,10 +20,11 @@
  '(show-paren-mode t)
  '(sound-load-list nil)
  '(tool-bar-mode nil)
- '(visible-bell t))
+ '(visible-bell f))
 
-;; Windows isn't welcome in my home so this is an easy way to tell if I'm working at the office.
-(defvar at-the-office-p (eq system-type 'windows-nt))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup ELPA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; These aren't quite as useful as they were pre-ELPA but I'll keep them around for now.
 (defvar libdir (expand-file-name "~/.emacs.d"))
@@ -29,13 +32,12 @@
 (defun libdir-file (file) (concat libdir "/" file))
 
 ;; There are only a couple of packages that have to be managed manually now.
-(defvar lib-dirs '("elpa" "yasnippet-0.6.1c" "themes"))
-
 ;; Add all the libs to the load path.
 ;; Ideally, ELPA would be the only package we would load manually
 ;; and all other packages would be managed through ELPA.
 ;; Unfortunately a handful of packages aren't in repositories so
 ;; we still have to load them manually for now.
+(defvar lib-dirs '("elpa" "themes"))
 (mapcar #'(lambda (path) (add-to-list 'load-path (libdir-file path))) lib-dirs)
 
 ;; ELPA package archive system.
@@ -43,21 +45,33 @@
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
-;; Set the default font to something nice.
-(defvar my-font
-  (if at-the-office-p
-      "-outline-Bitstream Vera Sans Mono-normal-normal-normal-mono-11-*-*-*-c-*-iso8859-1"
-    "-apple-Bitstream_Vera_Sans_Mono-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"))
-(setq initial-frame-alist `((font . ,my-font)))
-(setq default-frame-alist `((font . ,my-font)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Configure ELPA-loaded packages
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Ensure the Command key is Meta on OSX.
-(if (not at-the-office-p)
-    (progn
-      (setq mac-option-key-is-meta nil)
-      (setq mac-command-key-is-meta t)
-      (setq mac-command-modifier 'meta)
-      (setq mac-option-modifier nil)))
+;; Setup Cygwin Emacs support
+(require 'cygwin-mount)
+(cygwin-mount-activate)
+(require 'setup-cygwin)
+
+;; Prevent issues with the Windows null device (NUL)
+;; when using cygwin find with grep.
+;; (http://www.emacswiki.org/emacs/NTEmacsWithCygwin)
+(defadvice grep-compute-defaults (around grep-compute-defaults-advice-null-device)
+  "Use cygwin's /dev/null as the null-device."
+  (let ((null-device "/dev/null"))
+	ad-do-it))
+(ad-activate 'grep-compute-defaults)
+
+;; Switch Windows Graphically
+(require 'switch-window)
+
+;; Visible bookmarks and other bookmark amenities
+(require 'bm)
+(setq bm-highlight-style 'bm-highlight-only-line)
+(global-set-key (kbd "M-N") 'bm-next)
+(global-set-key (kbd "M-P") 'bm-previous)
+(global-set-key (kbd "M-SPC") 'bm-toggle)
 
 ;; Maxmize the window and start with 50/50 vertical split.
 (require 'maxframe)
@@ -68,9 +82,29 @@
 (require 'color-theme-subdued)
 (color-theme-subdued)
 
-;; Tabs cause nothing but headaches but I'm forced to use them at work.
+;; Enable Yasnippet for templating system
+(require 'yasnippet)
+(yas/initialize)
+(yas/load-directory (libdir-file "elpa/yasnippet-0.6.1/snippets"))
+
+;; Enable IDO to handle buffer switching and such (provides fuzzy pattern matching)
+(require 'ido)
+(ido-mode t)
+(setq ido-ignore-buffers '("\\` " "^\*Mess" "^\*Back" "^\*scratch" ".*Completion" "^\*Ido") ; ignore these
+      ido-everywhere t                           ; use for many file dialogs
+	  ido-case-fold  t                           ; be case-insensitive
+	  ido-enable-flex-matching t                 ; be flexible
+	  ido-max-prospects 10                       ; don't spam my minibuffer (but I got some screen real estate to spare)
+	  ido-confirm-unique-completion t            ; wait for RET, even with unique completion
+	  ido-auto-merge-werk-directories-length -1) ; new file if no match
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Misc Settings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Configure tabs
 (setq-default tab-width 4)
-(setq-default indent-tabs-mode at-the-office-p)
+(setq-default indent-tabs-mode t)
 
 ;; Always show the buffer name in the title bar.
 (setq-default
@@ -89,10 +123,6 @@
            dired-directory
            (revert-buffer-function " %b"("%b - Dir:  " default-directory)))))))
 
-;; Set an appropriate email address depending on whether I'm at work or home.
-(setq user-mail-address
-      (if at-the-office-p "hipplej@zuerchertech.com" "brokenreality@gmail.com"))
-
 ;; Don't show the damn splash screen.
 (setq inhibit-splash-screen t)
 
@@ -107,12 +137,8 @@
       (remq 'process-kill-buffer-query-function
             kill-buffer-query-functions))
 
-; Prevent accidentally killing emacs.
-(defun confirm-exit-from-emacs()
-  (interactive)
-  (if (yes-or-no-p "Do you want to exit? ")
-      (save-buffers-kill-emacs)))
-(global-set-key "\C-x\C-c" 'confirm-exit-from-emacs)
+;;Auto revert when a file is changed
+(global-auto-revert-mode t)
 
 ;; Default to 'string' mode when using re-builder.
 (setq reb-re-syntax 'string)
@@ -120,54 +146,54 @@
 ;; Always show line numbers.
 (global-linum-mode t)
 
-;; Enable yasnippet for fancy templates.
-(require 'yasnippet)
-(yas/initialize)
-(yas/load-directory (libdir-file "yasnippet-0.6.1c/snippets"))
-
-;; Enable fancy window switching.
-(require 'switch-window)
-
-;; Enable IDO to handle buffer switching and such.
-(require 'ido)
-(ido-mode t)
-(setq ido-ignore-buffers '("\\` " "^\*Mess" "^\*Back" "^\*scratch" ".*Completion" "^\*Ido") ; ignore these
-      ido-everywhere t            ; use for many file dialogs
-	  ido-case-fold  t            ; be case-insensitive
-	  ido-enable-flex-matching t  ; be flexible
-	  ido-max-prospects 5         ; don't spam my minibuffer
-	  ido-confirm-unique-completion t ; wait for RET, even with unique completion
-	  ido-auto-merge-werk-directories-length -1) ; new file if no match
-
-;; Enable fancy autocompletion in code.
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories (libdir-file "auto-complete/ac-dict"))
-(ac-config-default)
-(setq ac-use-menu-map t)
-(define-key ac-menu-map "\C-n" 'ac-next)
-(define-key ac-menu-map "\C-p" 'ac-previous)
-
 ;; I write C++ so default to the correct mode based on the filetypes I commonly use.
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Custom functions & keybinds
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Prevent accidentally killing emacs.
+(defun confirm-exit-from-emacs()
+  (interactive)
+  (if (yes-or-no-p "Do you want to exit? ")
+      (save-buffers-kill-emacs)))
+(global-set-key (kbd "C-x C-c") 'confirm-exit-from-emacs)
+
+;; Indent & Outdent
+(global-set-key (kbd "C-<tab>") (kbd "C-u 4 C-x <tab>"))
+(global-set-key (kbd "<backtab>") (kbd "C-u -4 C-x <tab>"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Mode setup and mode hooks                                                                             
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; C mode specific stuff.
 (add-hook 'c-mode-common-hook
           (lambda()
+			(idle-highlight-mode +1)
             (progn
               (local-set-key  (kbd "C-c o") 'ff-find-other-file)
               (font-lock-add-keywords nil '(("\\<\\(FIXME\\|TODO\\|BUG\\|NOTE\\):" 1 font-lock-warning-face t))))))
 
 ;; Python mode specific stuff.
 (add-hook 'python-mode-hook
-          (lambda()
+		  (lambda()
+			(idle-highlight-mode +1)
             (setq tab-width 4
                   py-indent-offset 4
-                  indent-tabs-mode at-the-office-p
-                  py-smart-indentation (not at-the-office-p)
+                  indent-tabs-mode t
+                  py-smart-indentation t
                   python-indent 4)))
 
-;; Clojure mode specific stuff.
-(add-hook 'clojure-mode-hook
-          (lambda()
-            (paredit-mode 1)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Style customization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:stipple nil :background "#000" :foreground "#d3d7cf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 83 :width normal :foundry "outline" :family "Consolas"))))
+ '(bm-face ((((class color) (background dark)) (:background "#222222")))))
