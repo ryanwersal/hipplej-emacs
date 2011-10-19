@@ -78,9 +78,9 @@
 (add-hook 'window-setup-hook 'maximize-frame t)
 (add-hook 'window-setup-hook 'split-window-horizontally)
 
-;; Enable syntax highlighting.
-(require 'color-theme-subdued)
-(color-theme-subdued)
+(require 'color-theme)
+(require 'color-theme-solarized)
+(color-theme-solarized-dark)
 
 ;; Enable Yasnippet for templating system
 (require 'yasnippet)
