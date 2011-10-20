@@ -25,22 +25,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup ELPA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; These aren't quite as useful as they were pre-ELPA but I'll keep them around for now.
 (defvar libdir (expand-file-name "~/.emacs.d"))
-
 (defun libdir-file (file) (concat libdir "/" file))
 
-;; There are only a couple of packages that have to be managed manually now.
-;; Add all the libs to the load path.
-;; Ideally, ELPA would be the only package we would load manually
-;; and all other packages would be managed through ELPA.
-;; Unfortunately a handful of packages aren't in repositories so
-;; we still have to load them manually for now.
-(defvar lib-dirs '("elpa" "themes"))
+;; Generates load-path variables
+;; This is pretty useless now but will remain just in case non-ELPA packages are added in the future
+(defvar lib-dirs '("elpa"))
 (mapcar #'(lambda (path) (add-to-list 'load-path (libdir-file path))) lib-dirs)
 
-;; ELPA package archive system.
+;; Load ELPA
 (require 'package)
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
@@ -154,7 +147,7 @@
 ;; Custom functions & keybinds
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Prevent accidentally killing emacs.
+;; Prevent accidentally killing emacs.
 (defun confirm-exit-from-emacs()
   (interactive)
   (if (yes-or-no-p "Do you want to exit? ")
