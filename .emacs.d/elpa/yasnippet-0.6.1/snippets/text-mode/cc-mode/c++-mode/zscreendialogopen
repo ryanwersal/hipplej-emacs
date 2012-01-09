@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: zscreendialogopen
+# --
+${1:Screen Class} *${2:Variable} = new $1();
+$2->_open(${3:Record ID});
+ZScreenDialog z($2, this);
+if (z.exec() == QDialog::Accepted)
+{
+	ZCore::singleShotAtMainLoop(this, SLOT(_requery()));
+	return true;
+}
+return false;$0

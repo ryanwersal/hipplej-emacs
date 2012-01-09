@@ -1,0 +1,4 @@
+# name: zdebug << __FUNCTION__ << ZVAR( ... ) << endl;
+# key: zdebug
+# --
+zdebug << __FUNCTION__ << "(" << __LINE__ << "): " << ZVAR(${1:variable}) << endl;

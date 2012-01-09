@@ -91,6 +91,11 @@
 	  ido-confirm-unique-completion t            ; wait for RET, even with unique completion
 	  ido-auto-merge-werk-directories-length -1) ; new file if no match
 
+(require 'hl-line)
+(global-hl-line-mode 1)
+(require 'autopair)
+(autopair-global-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Misc Settings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -158,6 +163,9 @@
 (global-set-key (kbd "C-<tab>") (kbd "C-u 4 C-x <tab>"))
 (global-set-key (kbd "<backtab>") (kbd "C-u -4 C-x <tab>"))
 
+;; Find & Replace
+(global-set-key (kbd "C-x C-r") 'replace-string)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Mode setup and mode hooks                                                                             
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -189,4 +197,5 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(default ((t (:stipple nil :background "#000" :foreground "#d3d7cf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 83 :width normal :foundry "outline" :family "Consolas"))))
- '(bm-face ((((class color) (background dark)) (:background "#222222")))))
+ '(bm-face ((((class color) (background dark)) (:background "#222222"))))
+ '(hl-line ((t (:background "#023a48")))))
