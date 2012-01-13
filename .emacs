@@ -41,21 +41,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Configure ELPA-loaded packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Setup Cygwin Emacs support
-(require 'cygwin-mount)
-(cygwin-mount-activate)
-(require 'setup-cygwin)
-
-;; Prevent issues with the Windows null device (NUL)
-;; when using cygwin find with grep.
-;; (http://www.emacswiki.org/emacs/NTEmacsWithCygwin)
-(defadvice grep-compute-defaults (around grep-compute-defaults-advice-null-device)
-  "Use cygwin's /dev/null as the null-device."
-  (let ((null-device "/dev/null"))
-	ad-do-it))
-(ad-activate 'grep-compute-defaults)
-
 ;; Switch Windows Graphically
 (require 'switch-window)
 
@@ -187,6 +172,9 @@
                   indent-tabs-mode t
                   py-smart-indentation t
                   python-indent 4)))
+
+;; Fire up the emacs server
+(server-start)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Style customization
