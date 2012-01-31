@@ -25,9 +25,7 @@ protected:
 	virtual void save();
 	virtual void requery();
 	virtual void print();
-
-protected slots:
-	void handleLink(const QString& link);
+	virtual void handleLink(const QString& link);
 
 private:
 	ZSqlModel _model;
@@ -60,11 +58,8 @@ $1::~$1()
 //==============================================================================
 void $1::fillMenuPane(ZTaskPane* menuPane)
 {
-	QMap<QString, QVariant> menu;
-	QStringList links;
-	// links << "<a href=\"foo\">Foo</a>";
-	menu["Menu"] = links;
-	initializer::fillTaskPane(menuPane, menu);
+	menuPane->addCategory("Menu");
+	//menuPane->addItem("<a href=\"foo\">Foo</a>");
 }
 
 //==============================================================================
