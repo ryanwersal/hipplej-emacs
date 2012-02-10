@@ -76,10 +76,21 @@
 	  ido-confirm-unique-completion t            ; wait for RET, even with unique completion
 	  ido-auto-merge-werk-directories-length -1) ; new file if no match
 
+;; Show horizontal highlight line
 (require 'hl-line)
 (global-hl-line-mode 1)
+
+;; Pair several types of characters ('(', '"', etc)
 (require 'autopair)
 (autopair-global-mode)
+
+;; Enable fancy autocompletion
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories (libdir-file "auto-complete/ac-dict"))
+(ac-config-default)
+(setq ac-use-menu-map t)
+(define-key ac-menu-map (kbd "C-n") 'ac-next)
+(define-key ac-menu-map (kbd "C-p") 'ac-previous)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Misc Settings
