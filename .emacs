@@ -30,7 +30,7 @@
 
 ;; Generates load-path variables
 ;; This is pretty useless now but will remain just in case non-ELPA packages are added in the future
-(defvar lib-dirs '("elpa"))
+(defvar lib-dirs '("elpa" "extra-packages"))
 (mapcar #'(lambda (path) (add-to-list 'load-path (libdir-file path))) lib-dirs)
 
 ;; Load ELPA
@@ -41,6 +41,81 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Configure ELPA-loaded packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup Cygwin Emacs support
+(require 'cygwin-mount)
+(cygwin-mount-activate)
+(require 'setup-cygwin)
+	  	
+;; Prevent issues with the Windows null device (NUL)
+;; when using cygwin find with grep.
+;; (http://www.emacswiki.org/emacs/NTEmacsWithCygwin)
+(defadvice grep-compute-defaults (around grep-compute-defaults-advice-null-device)
+  "Use cygwin's /dev/null as the null-device."
+  (let ((null-device "/dev/null"))
+	ad-do-it))
+(ad-activate 'grep-compute-defaults)
+
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup and configure Cygwin's bash for use in Emacs
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; This assumes that Cygwin is installed in C:\cygwin (the
+;; default) and that C:\cygwin\bin is not already in your
+;; Windows Path (it generally should not be).
+
+(setq exec-path (cons "C:/cygwin/bin" exec-path))
+;; (setenv "PATH" (concat "C:\\cygwin\\bin;" (getenv "PATH")))
+
+;;   LOGNAME and USER are expected in many Emacs packages
+;;   Check these environment variables.
+
+(if (and (null (getenv "USER"))
+	 ;; Windows includes variable USERNAME, which is copied to
+	 ;; LOGNAME and USER respectively.
+	 (getenv "USERNAME"))
+	(setenv "USER" (getenv "USERNAME")))
+
+(if (and (getenv "LOGNAME")
+	 ;;  Bash shell defines only LOGNAME
+	 (null (getenv "USER")))
+	(setenv "USER" (getenv "LOGNAME")))
+
+(if (and (getenv "USER")
+	 (null (getenv "LOGNAME")))
+	(setenv "LOGNAME" (getenv "USER")))
+
+(defun cygwin-bash (&optional buffer)
+  "Run Cygwin Bash shell in optional BUFFER; default *shell-bash*."
+  (setenv "HOME" (getenv "/c/msys/home/ryan.wersal/"))
+  (autoload 'comint-check-proc "comint")
+  (interactive
+   (let ((name "*shell-bash*"))
+	 (if current-prefix-arg
+	 (setq name (read-string
+			 (format "Cygwin shell buffer (default %s): " name)
+			 (not 'initial-input)
+			 (not 'history)
+			 name)))
+	 (list name)))
+  (or buffer
+	  (setq buffer "*shell-bash*"))
+  (if (comint-check-proc buffer)
+	  (pop-to-buffer buffer)
+	(let* ((shell-file-name            "bash")
+	   (explicit-shell-file-name   shell-file-name)
+	   (explicit-sh-args           '("--login" "-i"))
+	   (explicit-bash-args         explicit-sh-args)
+	   (w32-quote-process-args     ?\"));; Use Cygwin quoting rules.
+	  (shell buffer)
+	  ;;  By default Emacs sends "\r\n", but bash wants plain "\n"
+	  (set-buffer-process-coding-system 'undecided-dos 'undecided-unix)
+	  ;; With TAB completion, add slash path separator, none to filenames
+	  (make-local-variable 'comint-completion-addsuffix)
+	  (setq comint-completion-addsuffix '("/" . ""))
+	  ;;  This variable is local to buffer
+	  (setq comint-prompt-regexp "^[ \n\t]*[$] ?"))))
+(global-set-key [f1] 'cygwin-bash)
+
 ;; Switch Windows Graphically
 (require 'switch-window)
 
@@ -64,6 +139,7 @@
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory (libdir-file "elpa/yasnippet-0.6.1/snippets"))
+(global-set-key (kbd "C-<space>") 'yas/expand)
 
 ;; Enable IDO to handle buffer switching and such (provides fuzzy pattern matching)
 (require 'ido)
