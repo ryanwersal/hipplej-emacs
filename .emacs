@@ -59,6 +59,8 @@
 ;; Setup and configure Cygwin's bash for use in Emacs
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; From http://www.cygwin.com/faq/faq-nochunks.html#faq.using.ntemacs
+
 ;; This assumes that Cygwin is installed in C:\cygwin (the
 ;; default) and that C:\cygwin\bin is not already in your
 ;; Windows Path (it generally should not be).
@@ -86,7 +88,7 @@
 
 (defun cygwin-bash (&optional buffer)
   "Run Cygwin Bash shell in optional BUFFER; default *shell-bash*."
-  (setenv "HOME" (getenv "/c/msys/home/ryan.wersal/"))
+  (setenv "HOME" (getenv "/c/msys/home/ryan.wersal/")) ;; Hack to get paths working properly...
   (autoload 'comint-check-proc "comint")
   (interactive
    (let ((name "*shell-bash*"))
