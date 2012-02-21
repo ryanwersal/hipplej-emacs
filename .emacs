@@ -116,7 +116,6 @@
 	  (setq comint-completion-addsuffix '("/" . ""))
 	  ;;  This variable is local to buffer
 	  (setq comint-prompt-regexp "^[ \n\t]*[$] ?"))))
-(global-set-key [f1] 'cygwin-bash)
 
 ;; Switch Windows Graphically
 (require 'switch-window)
@@ -250,6 +249,7 @@
 			(idle-highlight-mode +1)
             (progn
               (local-set-key  (kbd "C-c o") 'ff-find-other-file)
+			  (local-set-key  (kbd "C-c C-u") 'uncomment-region)
               (font-lock-add-keywords nil '(("\\<\\(FIXME\\|TODO\\|BUG\\|NOTE\\):" 1 font-lock-warning-face t))))))
 
 ;; Python mode specific stuff.
@@ -261,6 +261,13 @@
                   indent-tabs-mode t
                   py-smart-indentation t
                   python-indent 4)))
+
+;; SQL mode specific stuff.
+(add-hook 'sql-mode-hook
+		  (lambda()
+			(progn
+			  (local-set-key (kbd "C-c C-c") 'comment-region)
+			  (local-set-key (kbd "C-c C-u") 'uncomment-region))))
 
 ;; Fire up the emacs server
 (server-start)
