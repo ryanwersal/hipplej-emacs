@@ -140,7 +140,7 @@
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory (libdir-file "elpa/yasnippet-0.6.1/snippets"))
-(global-set-key (kbd "C-<space>") 'yas/expand)
+(setq yas/global-mode t)
 
 ;; Enable IDO to handle buffer switching and such (provides fuzzy pattern matching)
 (require 'ido)
@@ -160,14 +160,6 @@
 ;; Pair several types of characters ('(', '"', etc)
 (require 'autopair)
 (autopair-global-mode)
-
-;; Enable fancy autocompletion
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories (libdir-file "auto-complete/ac-dict"))
-(ac-config-default)
-(setq ac-use-menu-map t)
-(define-key ac-menu-map (kbd "C-n") 'ac-next)
-(define-key ac-menu-map (kbd "C-p") 'ac-previous)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Misc Settings
@@ -220,6 +212,10 @@
 ;; I write C++ so default to the correct mode based on the filetypes I commonly use.
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
+
+;; We use .pro files for configuring our make process and I want my additional features
+;; so I'll just call them "python" files :)
+(add-to-list 'auto-mode-alist '("\\.pro\\'" . python-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Custom functions & keybinds
